@@ -1,6 +1,8 @@
 const std = @import("std");
 const assert = std.debug.assert;
 
+const tracy = @import("tracy.zig");
+
 const Storage = enum(u1) {
     ColumnMajor,
     RowMajor,
@@ -53,6 +55,9 @@ pub fn Matrix(comptime T: type, columns: usize, rows: usize) type {
         }
 
         pub fn mul_mat(self: @This(), comptime n: usize, m2: Matrix(T, n, columns), mat_d: Matrix(T, n, rows)) void {
+            const scope = tracy.trace(@src());
+            defer scope.end();
+
             assert(self.storage == .RowMajor);
             assert(m2.storage == .ColumnMajor);
 
