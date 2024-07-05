@@ -75,19 +75,19 @@ pub fn Matrix(comptime T: type, columns: usize, rows: usize) type {
         }
 
         pub fn transpose_storage_copy(self: *@This()) void {
+            var temp_array: [columns * rows]T = undefined;
             const new_storage: Storage = if (self.storage == .ColumnMajor) .RowMajor else .ColumnMajor;
-            var transpose: [columns * rows]T = undefined;
 
             for (0..rows) |row| {
                 for (0..columns) |column| {
                     const flat_index_transposed = index_flat_storage(new_storage, column, row);
 
                     // Read with inverse mapping
-                    transpose[flat_index_transposed] = self.at(column, row);
+                    temp_array[flat_index_transposed] = self.at(column, row);
                 }
             }
 
-            std.mem.copyForwards(T, self.data, &transpose);
+            std.mem.copyForwards(T, self.data, &temp_array);
 
             self.storage = new_storage;
         }

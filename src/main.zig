@@ -11,16 +11,27 @@ pub fn main() !void {
     const allocator = gpa.allocator();
     // const allocator = std.heap.page_allocator;
 
-    const m1 = Matrix(f32, 4, 4){ .data = try allocator.alloc(f32, 4 * 4) };
+    const M = 8192 / 2;
+    const N = 128;
+    const k = 8192 / 2;
+
+    const flops = 2 * M * N * k;
+    const bytes = 2 * (M * k + N * k + N * M);
+    const ai = @as(f32, @floatFromInt(flops)) / @as(f32, @floatFromInt(bytes));
+
+    std.debug.print("Arithmetic intensity = {}\n", .{ai});
+
+    const m1 = Matrix(f32, k, M){ .data = try allocator.alloc(f32, k * M) };
     defer allocator.free(m1.data);
 
-    var m2 = Matrix(f32, 8, 4){ .data = try allocator.alloc(f32, 4 * 8) };
+    var m2 = Matrix(f32, N, k){ .data = try allocator.alloc(f32, N * k) };
     defer allocator.free(m2.data);
 
     // Identity matrix
     for (m1.data) |*elt| {
         elt.* = 0.0;
     }
+
     for (m2.data) |*elt| {
         elt.* = 1.0;
     }
@@ -40,19 +51,11 @@ pub fn main() !void {
     m2.data[10] = 1.0;
     m2.data[15] = 1.0;
 
-    m1.print();
+    // m1.print();
 
-    m2.print();
+    // m2.print();
 
-    const v: [4]f32 = .{ 1, 2, 3, 4 };
-
-    const rslt = m1.mul_vec(v);
-
-    for (0..4) |i| {
-        std.debug.print("v[{}] = {}\n", .{ i, rslt[i] });
-    }
-
-    const r = Matrix(m1.scalar_type, m2.columns, m1.rows){ .data = try allocator.alloc(f32, 4 * 8) };
+    const r = Matrix(f32, N, M){ .data = try allocator.alloc(f32, N * M) };
     defer allocator.free(r.data);
 
     for (r.data) |*elt| {
@@ -63,5 +66,5 @@ pub fn main() !void {
 
     m1.mul_mat(m2.columns, m2, r);
 
-    r.print();
+    // r.print();
 }
