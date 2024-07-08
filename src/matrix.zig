@@ -23,17 +23,17 @@ pub fn Matrix(comptime T: type, columns: usize, rows: usize) type {
             };
         }
 
-        fn index_flat(self: @This(), col_index: usize, row_index: usize) usize {
+        pub fn index_flat(self: @This(), col_index: usize, row_index: usize) usize {
             return index_flat_storage(self.storage, col_index, row_index);
         }
 
-        fn get_row(self: @This(), row_index: usize) @Vector(columns, T) {
+        pub fn get_row(self: @This(), row_index: usize) @Vector(columns, T) {
             assert(self.storage == .RowMajor);
             const offset = row_index * columns;
             return self.data[offset..][0..columns].*;
         }
 
-        fn get_column(self: @This(), col_index: usize) @Vector(rows, T) {
+        pub fn get_column(self: @This(), col_index: usize) @Vector(rows, T) {
             assert(self.storage == .ColumnMajor);
             const offset = col_index * rows;
             return self.data[offset..][0..rows].*;
