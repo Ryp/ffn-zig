@@ -35,8 +35,8 @@ pub fn build(b: *std.Build) void {
         const client_cpp = "external/tracy/public/TracyClient.cpp";
         const tracy_c_flags: []const []const u8 = &[_][]const u8{ "-DTRACY_ENABLE=1", "-DTRACY_NO_EXIT", "-fno-sanitize=undefined" };
 
-        exe.root_module.addIncludePath(.{ .path = tracy_path });
-        exe.root_module.addCSourceFile(.{ .file = .{ .path = client_cpp }, .flags = tracy_c_flags });
+        exe.root_module.addIncludePath(b.path(tracy_path));
+        exe.root_module.addCSourceFile(.{ .file = b.path(client_cpp), .flags = tracy_c_flags });
 
         exe.linkSystemLibrary("c++");
         exe.linkLibC();
