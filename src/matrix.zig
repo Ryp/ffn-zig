@@ -44,14 +44,14 @@ pub fn Matrix(comptime T: type, columns: usize, rows: usize) type {
             return self.data[index];
         }
 
-        pub fn mul_vec(self: @This(), vector: @Vector(rows, T)) @Vector(rows, T) {
+        pub fn mul_vec(self: @This(), vector: @Vector(columns, T)) @Vector(rows, T) {
             var result: @Vector(rows, T) = undefined;
 
             for (0..rows) |row_index| {
-                result[row_index] = dot(T, rows, self.get_row(row_index), vector);
+                result[row_index] = dot(T, columns, self.get_row(row_index), vector);
             }
 
-            return vector;
+            return result;
         }
 
         pub fn mul_mat(self: @This(), comptime n: usize, m2: Matrix(T, n, columns), mat_d: Matrix(T, n, rows)) void {
