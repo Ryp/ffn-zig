@@ -8,13 +8,17 @@ const Storage = enum(u1) {
     RowMajor,
 };
 
-pub fn Matrix(comptime T: type, columns: usize, rows: usize) type {
+pub fn Matrix(T: type, columns: usize, rows: usize) type {
     return struct {
         comptime scalar_type: type = T,
         comptime columns: usize = columns,
         comptime rows: usize = rows,
         storage: Storage = .RowMajor,
-        data: []T,
+        data: []T = undefined,
+
+        pub fn allocate(self: *@This(), allocator: std.mem.Allocator) !void {
+            self.data = try allocator.alloc(T, columns * rows);
+        }
 
         fn index_flat_storage(storage: Storage, col_index: usize, row_index: usize) usize {
             return switch (storage) {
