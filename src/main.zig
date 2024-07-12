@@ -29,10 +29,22 @@ pub fn main() !void {
     try w_o.allocate(allocator);
     defer allocator.free(w_o.data);
 
-    // FIXME Set random weights
-    const bias_h1: @Vector(hidden_layer_dim, f32) = undefined;
-    const bias_h2: @Vector(hidden_layer_dim, f32) = undefined;
-    const bias_o: @Vector(output_layer_dim, f32) = undefined;
+    var prng = std.Random.DefaultPrng.init(42); // FIXME
+    var rng = prng.random();
+
+    for (w_h1.data) |*element| {
+        element.* = rng.float(f32);
+    }
+    for (w_h2.data) |*element| {
+        element.* = rng.float(f32);
+    }
+    for (w_o.data) |*element| {
+        element.* = rng.float(f32);
+    }
+
+    const bias_h1 = random_vec(f32, hidden_layer_dim, &rng);
+    const bias_h2 = random_vec(f32, hidden_layer_dim, &rng);
+    const bias_o = random_vec(f32, output_layer_dim, &rng);
 
     // Forward pass
     const input: @Vector(input_layer_dim, f32) = undefined;
@@ -47,4 +59,14 @@ pub fn main() !void {
     const a_o = activation.sigmoid_vec(w_o.scalar_type, w_o.rows, z_o);
 
     _ = a_o;
+}
+
+pub fn random_vec(comptime T: type, comptime size: usize, rng: *std.Random) @Vector(size, T) {
+    var result: @Vector(size, T) = undefined;
+
+    for (0..size) |index| {
+        result[index] = rng.float(T);
+    }
+
+    return result;
 }
