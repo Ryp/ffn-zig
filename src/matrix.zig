@@ -8,7 +8,7 @@ const Storage = enum(u1) {
     RowMajor,
 };
 
-pub fn Matrix(T: type, columns: usize, rows: usize) type {
+pub fn Matrix(columns: usize, rows: usize, T: type) type {
     return struct {
         comptime scalar_type: type = T,
         comptime columns: usize = columns,
@@ -58,7 +58,7 @@ pub fn Matrix(T: type, columns: usize, rows: usize) type {
             return result;
         }
 
-        pub fn mul_mat(self: @This(), comptime n: usize, m2: Matrix(T, n, columns), mat_d: Matrix(T, n, rows)) void {
+        pub fn mul_mat(self: @This(), comptime n: usize, m2: Matrix(n, columns, T), mat_d: Matrix(n, rows, T)) void {
             const scope = tracy.trace(@src());
             defer scope.end();
 

@@ -12,7 +12,9 @@ test "basic" {
 
     const allocator = gpa.allocator();
 
-    var m = Matrix(u8, 2, 2){ .data = try allocator.alloc(u8, 4) };
+    var m = Matrix(2, 2, u8){};
+
+    try m.allocate(allocator);
     defer allocator.free(m.data);
 
     const idx1_0 = m.index_flat(1, 0);
@@ -53,10 +55,14 @@ test "matmul" {
 
     // std.debug.print("Arithmetic intensity = {}\n", .{ai});
 
-    const m1 = Matrix(f32, k, M){ .data = try allocator.alloc(f32, k * M) };
+    var m1 = Matrix(k, M, f32){};
+
+    try m1.allocate(allocator);
     defer allocator.free(m1.data);
 
-    var m2 = Matrix(f32, N, k){ .data = try allocator.alloc(f32, N * k) };
+    var m2 = Matrix(N, k, f32){};
+
+    try m2.allocate(allocator);
     defer allocator.free(m2.data);
 
     // Identity matrix
@@ -87,7 +93,9 @@ test "matmul" {
 
     // m2.print();
 
-    const r = Matrix(f32, N, M){ .data = try allocator.alloc(f32, N * M) };
+    var r = Matrix(N, M, f32){};
+
+    try r.allocate(allocator);
     defer allocator.free(r.data);
 
     for (r.data) |*elt| {

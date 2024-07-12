@@ -15,9 +15,9 @@ pub fn main() !void {
     const hidden_layer_dim = 16;
     const output_layer_dim = 10;
 
-    var w_h1 = Matrix(f32, input_layer_dim, hidden_layer_dim){};
-    var w_h2 = Matrix(f32, hidden_layer_dim, hidden_layer_dim){};
-    var w_o = Matrix(f32, hidden_layer_dim, output_layer_dim){};
+    var w_h1 = Matrix(input_layer_dim, hidden_layer_dim, f32){};
+    var w_h2 = Matrix(hidden_layer_dim, hidden_layer_dim, f32){};
+    var w_o = Matrix(hidden_layer_dim, output_layer_dim, f32){};
 
     try w_h1.allocate(allocator);
     defer allocator.free(w_h1.data);
