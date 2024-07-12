@@ -1,6 +1,7 @@
 const std = @import("std");
 const assert = std.debug.assert;
 
+const activation = @import("activation.zig");
 const matrix = @import("matrix.zig");
 const Matrix = matrix.Matrix;
 
@@ -37,27 +38,13 @@ pub fn main() !void {
     const input: @Vector(input_layer_dim, f32) = undefined;
 
     const z_h1 = w_h1.mul_vec(input) + bias_h1;
-    const a_h1 = sigmoid_vec(w_h1.scalar_type, w_h1.rows, z_h1);
+    const a_h1 = activation.sigmoid_vec(w_h1.scalar_type, w_h1.rows, z_h1);
 
     const z_h2 = w_h2.mul_vec(a_h1) + bias_h2;
-    const a_h2 = sigmoid_vec(w_h2.scalar_type, w_h2.rows, z_h2);
+    const a_h2 = activation.sigmoid_vec(w_h2.scalar_type, w_h2.rows, z_h2);
 
     const z_o = w_o.mul_vec(a_h2) + bias_o;
-    const a_o = sigmoid_vec(w_o.scalar_type, w_o.rows, z_o);
+    const a_o = activation.sigmoid_vec(w_o.scalar_type, w_o.rows, z_o);
 
     _ = a_o;
-}
-
-fn sigmoid_vec(comptime T: type, comptime size: usize, vector: @Vector(size, T)) @Vector(size, T) {
-    var result: @Vector(size, T) = undefined;
-
-    for (0..size) |index| {
-        result[index] = sigmoid(T, vector[index]);
-    }
-
-    return result;
-}
-
-fn sigmoid(comptime T: type, value: T) T {
-    return 1.0 / (1.0 + std.math.exp(-value));
 }
