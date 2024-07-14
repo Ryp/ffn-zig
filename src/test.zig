@@ -37,6 +37,36 @@ test "basic" {
     try testing.expect(idx1_0 != idx1_0_t);
 }
 
+test "transpose" {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+
+    const allocator = gpa.allocator();
+
+    var m = Matrix(2, 9, f32){};
+
+    try m.allocate(allocator);
+    defer allocator.free(m.data);
+
+    for (m.data) |*elt| {
+        elt.* = 0.0;
+    }
+
+    const m_idx_a = m.index_flat(1, 3);
+    const m_idx_b = m.index_flat(0, 1);
+
+    const dummy_value_a = 1.0;
+    const dummy_value_b = 2.0;
+
+    m.data[m_idx_a] = dummy_value_a;
+    m.data[m_idx_b] = dummy_value_b;
+
+    var m_t_shared = m.transpose_share();
+
+    try testing.expectEqual(dummy_value_a, m_t_shared.at(3, 1));
+    try testing.expectEqual(dummy_value_b, m_t_shared.at(1, 0));
+}
+
 test "matmul" {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -44,9 +74,9 @@ test "matmul" {
     const allocator = gpa.allocator();
     // const allocator = std.heap.page_allocator;
 
-    const M = 8192 / 2;
-    const N = 128;
-    const k = 8192 / 2;
+    const M = 7;
+    const N = 13;
+    const k = 9;
 
     const flops = 2 * M * N * k;
     const bytes = 2 * (M * k + N * k + N * M);
